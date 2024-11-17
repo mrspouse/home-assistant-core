@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "minor_version": 4,
+  "key": "core.config_entries",
+  "data": {
+    "entries": [
+      {"created_at":"2024-11-17T08:14:47.198680+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"sun","entry_id":"01JCWK0KCYPYWMX9172V4DPMK1","minor_version":1,"modified_at":"2024-11-17T08:14:47.198699+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"import","title":"Sun","unique_id":null,"version":1},
+      {"created_at":"2024-11-17T08:15:15.212908+00:00","data":{"ignore_cec":[],"known_hosts":[],"user_id":"14dc154e76284f7592f82409bfb69143","uuid":[]},"disabled_by":null,"discovery_keys":{"zeroconf":[{"domain":"zeroconf","key":["_googlecast._tcp.local.","Google-Home-09764d744671381b8949211513ca7dca._googlecast._tcp.local."],"version":1}]},"domain":"cast","entry_id":"01JCWK1ERC9CRAPCT256GJ73MK","minor_version":1,"modified_at":"2024-11-17T08:15:15.297374+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"zeroconf","title":"Google Cast","unique_id":"cast","version":1},
+      {"created_at":"2024-11-17T08:29:00.579152+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"shopping_list","entry_id":"01JCWKTMRZYE60NCBQXWQRVJSR","minor_version":1,"modified_at":"2024-11-17T08:29:00.579164+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","title":"Shopping list","unique_id":"shopping_list","version":1},
+      {"created_at":"2024-11-17T08:29:08.814395+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"radio_browser","entry_id":"01JCWKTWTEQ1VWCAF93N02KG8D","minor_version":1,"modified_at":"2024-11-17T08:29:08.814402+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","title":"Radio Browser","unique_id":null,"version":1},
+      {"created_at":"2024-11-17T08:29:09.470680+00:00","data":{"language":"en","tld":"com"},"disabled_by":null,"discovery_keys":{},"domain":"google_translate","entry_id":"01JCWKTXEYRCE4EVRPBDH3Q932","minor_version":1,"modified_at":"2024-11-17T08:29:09.470693+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","title":"Google Translate text-to-speech","unique_id":null,"version":1},
+      {"created_at":"2024-11-17T08:29:11.442691+00:00","data":{"track_home":true},"disabled_by":null,"discovery_keys":{},"domain":"met","entry_id":"01JCWKTZCJXDZ38MD6CV62NYW3","minor_version":1,"modified_at":"2024-11-17T08:29:11.442699+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","title":"Home","unique_id":null,"version":1}
+    ]
+  }
+}

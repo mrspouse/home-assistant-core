@@ -126,9 +126,9 @@
         "access_token_expiration": 1800.0,
         "token": "1c82f64d245a781aced602ee923390c3ab0960a87c598326d81a6af174e896ab146cc5ce5f10ed5101964565bc48f3385784160403fb32e9f6b170a31f1a3226",
         "jwt_key": "ce8463d947d9ab82dcf7b47fed5fe900fb77f65cc5e62d867b4e28ab7f13b025224b27db2a9595bfb0fb4924e38242a973e846adb0df7208c1b065ee24dcce43",
-        "last_used_at": "2024-11-17T08:30:10.763999+00:00",
+        "last_used_at": "2024-11-19T12:15:51.630572+00:00",
         "last_used_ip": "127.0.0.1",
-        "expire_at": 1739608210.763999,
+        "expire_at": 1739794551.630572,
         "credential_id": "26addd6710704d5bb3c4cd3ec1857dd4",
         "version": "2024.12.0.dev0"
       }

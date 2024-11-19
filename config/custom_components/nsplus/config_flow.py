@@ -40,7 +40,7 @@ async def _validate_input(data: dict[str, Any]) -> dict[str, str]:
 class NightscoutConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Nightscout."""
 
-    VERSION = 2
+    VERSION = 1
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None

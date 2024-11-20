@@ -1,19 +1,20 @@
+"""Base models for Python interface to Nightscout."""
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import dateutil.parser
-import pytz
 
 
-class BaseModel(object):
-    def __init__(self, **kwargs):
+class BaseModel:  # noqa: D101
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {}
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         pass
 
     @classmethod
-    def new_from_json_dict(cls, data, **kwargs):
+    def new_from_json_dict(cls, data, **kwargs):  # noqa: D102
         json_data = data.copy()
         if kwargs:
             for key, val in kwargs.items():
@@ -22,12 +23,12 @@ class BaseModel(object):
         cls.json_transforms(json_data)
 
         c = cls(**json_data)
-        c._json = data
+        c._json = data  # noqa: SLF001
         return c
 
 
 class ServerStatus(BaseModel):
-    """Server Info and Status
+    """Server Info and Status.
 
     Server side status, default settings and capabilities
 
@@ -36,9 +37,10 @@ class ServerStatus(BaseModel):
         version (string): Server version
         name (string): Server name
         apiEnabled (boolean): If the API is enabled
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "status": None,
             "version": None,
@@ -52,7 +54,7 @@ class ServerStatus(BaseModel):
 
 
 class SGV(BaseModel):
-    """Sensor Glucose Value
+    """Sensor Glucose Value.
 
     Represents a single glucose measurement and direction at a specific time.
 
@@ -63,9 +65,10 @@ class SGV(BaseModel):
         date (datetime): The time of the measurementpa
         direction (string): One of ['DoubleUp', 'SingleUp', 'FortyFiveUp', 'Flat', 'FortyFiveDown', 'SingleDown', 'DoubleDown']
         device (string): the source of the measurement.  For example, 'share2', if pulled from Dexcom Share servers
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "sgv": 0,
             "sgv_mmol": 0,
@@ -82,16 +85,16 @@ class SGV(BaseModel):
         self.delta_mmol = self.mgdlTommolL(self.delta)
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         if json_data.get("dateString"):
             json_data["date"] = dateutil.parser.parse(json_data["dateString"])
-    
-    def mgdlTommolL(self, mgdl):
+
+    def mgdlTommolL(self, mgdl):  # noqa: D102
         return round(mgdl / 18, 1)
 
 
 class Treatment(BaseModel):
-    """Nightscout Treatment
+    """Nightscout Treatment.
 
     Represents an entry in the Nightscout treatments store, such as boluses, carb entries,
     temp basals, etc. Many of the following attributes will be set to None, depending on
@@ -107,9 +110,10 @@ class Treatment(BaseModel):
         duration (int): Duration in minutes for a temp basal.
         enteredBy (string): The person who gave the treatment if entered in Care Portal, or the device that fetched the treatment from the pump.
         glucose (int): Glucose value for a BG check, in mg/dl.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "temp": None,
             "enteredBy": None,
@@ -136,16 +140,16 @@ class Treatment(BaseModel):
         for (param, default) in self.param_defaults.items():
             setattr(self, param, kwargs.get(param, default))
 
-    def __repr__(self):
-        return "%s %s" % (self.timestamp, self.eventType)
+    def __repr__(self):  # noqa: D105
+        return f"{self.timestamp} {self.eventType}"
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         timestamp = json_data.get("timestamp")
         if timestamp:
-            if type(timestamp) == int:
+            if type(timestamp) == int:  # noqa: E721
                 json_data["timestamp"] = datetime.fromtimestamp(
-                    timestamp / 1000.0, pytz.utc
+                    timestamp / 1000.0, datetime.timezone.utc
                 )
             else:
                 json_data["timestamp"] = dateutil.parser.parse(timestamp)
@@ -154,21 +158,22 @@ class Treatment(BaseModel):
 
 
 class ScheduleEntry(BaseModel):
-    """ScheduleEntry
+    """ScheduleEntry.
 
     Represents a change point in one of the schedules on a Nightscout profile.
 
     Attributes:
         offset (timedelta): The start offset of the entry
         value (float): The value of the entry.
+
     """
 
-    def __init__(self, offset, value):
+    def __init__(self, offset, value):  # noqa: D107
         self.offset = offset
         self.value = value
 
     @classmethod
-    def new_from_json_dict(cls, data):
+    def new_from_json_dict(cls, data):  # noqa: D102
         seconds_offset = data.get("timeAsSeconds")
         if seconds_offset is None:
             hours, minutes = data.get("time").split(":")
@@ -177,30 +182,30 @@ class ScheduleEntry(BaseModel):
         return cls(timedelta(seconds=offset_in_seconds), float(data["value"]))
 
 
-class AbsoluteScheduleEntry(BaseModel):
-    def __init__(self, start_date, value):
+class AbsoluteScheduleEntry(BaseModel):  # noqa: D101
+    def __init__(self, start_date, value):  # noqa: D107
         self.start_date = start_date
         self.value = value
 
-    def __repr__(self):
-        return "%s = %s" % (self.start_date, self.value)
+    def __repr__(self):  # noqa: D105
+        return f"{self.start_date} = {self.value}"
 
 
-class Schedule(object):
-    """Schedule
+class Schedule:
+    """Schedule.
 
     Represents a schedule on a Nightscout profile.
 
     """
 
-    def __init__(self, entries, timezone):
+    def __init__(self, entries, timezone):  # noqa: D107
         self.entries = entries
         self.entries.sort(key=lambda e: e.offset)
         self.timezone = timezone
 
     # Expects a localized timestamp here
     def value_at_date(self, local_date):
-        """Get scheduled value at given date
+        """Get scheduled value at given date.
 
         Args:
             local_date: The datetime of interest.
@@ -215,7 +220,7 @@ class Schedule(object):
         return [e.value for e in self.entries if e.offset <= offset][-1]
 
     def between(self, start_date, end_date):
-        """Returns entries between given dates as AbsoluteScheduleEntry objects
+        """Return entries between given dates as AbsoluteScheduleEntry objects.
 
         Times passed in should be timezone aware.  Times returned will have a tzinfo
         matching the schedule timezone.
@@ -259,13 +264,13 @@ class Schedule(object):
         ]
 
     @classmethod
-    def new_from_json_array(cls, data, timezone):
+    def new_from_json_array(cls, data, timezone):  # noqa: D102
         entries = [ScheduleEntry.new_from_json_dict(d) for d in data]
         return cls(entries, timezone)
 
 
 class Profile(BaseModel):
-    """Profile
+    """Profile.
 
     Represents a Nightscout profile.
 
@@ -277,9 +282,10 @@ class Profile(BaseModel):
         basal (Schedule): A schedule of basal rates, which are in U/hr.
         target_low (Schedule): A schedule the low end of the target range, in mg/dl.
         target_high (Schedule): A schedule the high end of the target range, in mg/dl.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "dia": None,
             "carb_ratio": None,
@@ -296,10 +302,10 @@ class Profile(BaseModel):
             setattr(self, param, kwargs.get(param, default))
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         timezone = None
         if json_data.get("timezone"):
-            timezone = pytz.timezone(json_data.get("timezone"))
+            timezone = ZoneInfo(json_data.get("timezone"))
             json_data["timezone"] = timezone
         if json_data.get("carbratio"):
             json_data["carbratio"] = Schedule.new_from_json_array(
@@ -326,15 +332,16 @@ class Profile(BaseModel):
 
 
 class ProfileDefinition(BaseModel):
-    """ProfileDefinition
+    """ProfileDefinition.
 
     Represents a Nightscout profile definition, which can have multiple named profiles.
 
     Attributes:
         startDate (datetime): The time these profiles start at.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "defaultProfile": None,
             "store": None,
@@ -346,11 +353,11 @@ class ProfileDefinition(BaseModel):
         for (param, default) in self.param_defaults.items():
             setattr(self, param, kwargs.get(param, default))
 
-    def get_default_profile(self):
+    def get_default_profile(self):  # noqa: D102
         return self.store[self.defaultProfile]
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         if json_data.get("startDate"):
             json_data["startDate"] = dateutil.parser.parse(json_data["startDate"])
         if json_data.get("created_at"):
@@ -364,8 +371,8 @@ class ProfileDefinition(BaseModel):
             json_data["store"] = store
 
 
-class ProfileDefinitionSet(object):
-    """ProfileDefinitionSet
+class ProfileDefinitionSet:
+    """ProfileDefinitionSet.
 
     Represents a set of Nightscout profile definitions, each covering a range of time
     from its start time, to the start time of the next profile definition, or until
@@ -373,12 +380,12 @@ class ProfileDefinitionSet(object):
 
     """
 
-    def __init__(self, profile_definitions):
+    def __init__(self, profile_definitions):  # noqa: D107
         self.profile_definitions = profile_definitions
         self.profile_definitions.sort(key=lambda d: d.startDate)
 
     def get_profile_definition_active_at(self, date):
-        """Get the profile definition active at a given datetime
+        """Get the profile definition active at a given datetime.
 
         Args:
             date: The profile definition containing this time will be returned.
@@ -390,13 +397,13 @@ class ProfileDefinitionSet(object):
         return [d for d in self.profile_definitions if d.startDate <= date][-1]
 
     @classmethod
-    def new_from_json_array(cls, data):
+    def new_from_json_array(cls, data):  # noqa: D102
         defs = [ProfileDefinition.new_from_json_dict(d) for d in data]
         return cls(defs)
 
 
 class DeviceStatus(BaseModel):
-    """DeviceStatus
+    """DeviceStatus.
 
     Represents a Device on Nightscout. For example a MiaoMiao reader.
 
@@ -408,9 +415,10 @@ class DeviceStatus(BaseModel):
         pump (PumpDevice): Pump device.
         uploader (UploaderBattery): Uploader device's battery.
         xdripjs (XDripJs): xDripJS device.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "device": None,
             "created_at": None,
@@ -425,7 +433,7 @@ class DeviceStatus(BaseModel):
             setattr(self, param, kwargs.get(param, default))
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         if json_data.get("created_at"):
             json_data["created_at"] = dateutil.parser.parse(json_data["created_at"])
         if json_data.get("pump"):
@@ -439,7 +447,7 @@ class DeviceStatus(BaseModel):
 
 
 class XDripJs(BaseModel):
-    """XDripJs
+    """XDripJs.
 
     Represents a xDrip-js source.
 
@@ -469,9 +477,10 @@ class XDripJs(BaseModel):
         voltageb (float): Voltage of Battery B
         temperature (float): Transmitter Temperature
         resistance (float): Sensor Resistance
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "state": None,
             "stateString": None,
@@ -505,7 +514,7 @@ class XDripJs(BaseModel):
 
 
 class UploaderBattery(BaseModel):
-    """UploaderBattery
+    """UploaderBattery.
 
     Represents a Uploader device's battery on Nightscout.
 
@@ -513,9 +522,10 @@ class UploaderBattery(BaseModel):
         batteryVoltage (float): Battery Voltage.
         battery (int): Battery percentage.
         type (string): Uploader type.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "batteryVoltage": None,
             "battery": None,
@@ -527,7 +537,7 @@ class UploaderBattery(BaseModel):
 
 
 class PumpDevice(BaseModel):
-    """PumpDevice
+    """PumpDevice.
 
     Represents a Pump device on Nightscout.
 
@@ -536,9 +546,10 @@ class PumpDevice(BaseModel):
         battery (PumpBattery): Pump battery details.
         reservoir (float): Amount of insulin remaining in pump reservoir.
         status (PumpStatus): Pump status details.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "clock": None,
             "battery": None,
@@ -550,7 +561,7 @@ class PumpDevice(BaseModel):
             setattr(self, param, kwargs.get(param, default))
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         if json_data.get("clock"):
             json_data["clock"] = dateutil.parser.parse(json_data["clock"])
         if json_data.get("battery"):
@@ -560,16 +571,17 @@ class PumpDevice(BaseModel):
 
 
 class PumpBattery(BaseModel):
-    """PumpBattery
+    """PumpBattery.
 
     Represents the Pump's battery on Nightscout.
 
     Attributes:
         status (string): Pump Battery Status String. For example "normal".
         voltage (float): Pump Battery Voltage Level.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "clock": None,
             "battery": None,
@@ -582,7 +594,7 @@ class PumpBattery(BaseModel):
 
 
 class PumpStatus(BaseModel):
-    """PumpStatus
+    """PumpStatus.
 
     Represents a Pump device status on Nightscout.
 
@@ -591,9 +603,10 @@ class PumpStatus(BaseModel):
         bolusing (boolean): Is Pump Bolusing.
         suspended (boolean): Is Pump Suspended.
         timestamp (datetime): Date time of entry.
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         self.param_defaults = {
             "clock": None,
             "battery": None,
@@ -605,12 +618,12 @@ class PumpStatus(BaseModel):
             setattr(self, param, kwargs.get(param, default))
 
     @classmethod
-    def json_transforms(cls, json_data):
+    def json_transforms(cls, json_data):  # noqa: D102
         timestamp = json_data.get("timestamp")
         if timestamp:
-            if type(timestamp) == int:
+            if type(timestamp) == int:  # noqa: E721
                 json_data["timestamp"] = datetime.fromtimestamp(
-                    timestamp / 1000.0, pytz.utc
+                    timestamp / 1000.0, datetime.timezone.utc
                 )
             else:
                 json_data["timestamp"] = dateutil.parser.parse(timestamp)

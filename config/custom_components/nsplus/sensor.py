@@ -8,6 +8,7 @@ from typing import Any
 
 from aiohttp import ClientError
 from py_nightscout import Api as NightscoutAPI
+from .models import 
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry

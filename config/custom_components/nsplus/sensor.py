@@ -54,6 +54,8 @@ class NightscoutSensor(SensorEntity):
         """Fetch the latest data from Nightscout REST API and update the state."""
         try:
             values = await self.api.get_sgvs()
+            # values2 = await self.api.get_treatments()
+            # values3 = await self.api.get_devices_status()
         except (ClientError, TimeoutError, OSError) as error:
             _LOGGER.error("Error fetching data. Failed with %s", error)
             self._attr_available = False
@@ -62,6 +64,10 @@ class NightscoutSensor(SensorEntity):
         self._attr_available = True
         self._attr_extra_state_attributes = {}
         self._attr_native_value = None
+        # if values3:
+            # device = values3[0]
+        # if values2:
+            # treat = values2[0]
         if values:
             value = values[0]
             self._attr_extra_state_attributes = {

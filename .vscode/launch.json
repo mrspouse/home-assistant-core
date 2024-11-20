@@ -6,17 +6,26 @@
   "configurations": [
     {
       "name": "Home Assistant",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "homeassistant",
       "justMyCode": false,
-      "args": [
-        "--debug",
-        "-c",
-        "config"
-      ],
-      "preLaunchTask": "Compile English translations"
+      "args": ["--debug", "-c", "config"]
     },
+
+    // {
+    //   "name": "Home Assistant",
+    //   "type": "debugpy",
+    //   "request": "launch",
+    //   "module": "homeassistant",
+    //   "justMyCode": false,
+    //   "args": [
+    //     "--debug",
+    //     "-c",
+    //     "config"
+    //   ],
+    //   "preLaunchTask": "Compile English translations"
+    // },
     {
       "name": "Home Assistant (skip pip)",
       "type": "debugpy",

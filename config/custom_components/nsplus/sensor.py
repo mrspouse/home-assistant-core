@@ -7,7 +7,6 @@ import logging
 from typing import Any
 
 from aiohttp import ClientError
-from py_nightscout import Api as NightscoutAPI
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -15,6 +14,7 @@ from homeassistant.const import ATTR_DATE, UnitOfBloodGlucoseConcentration
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .api import Api as NightscoutAPI
 from .const import ATTR_DELTA, ATTR_DEVICE, ATTR_DIRECTION, DOMAIN
 
 SCAN_INTERVAL = timedelta(minutes=1)
@@ -53,9 +53,9 @@ class NightscoutSensor(SensorEntity):
     async def async_update(self) -> None:
         """Fetch the latest data from Nightscout REST API and update the state."""
         try:
-            values = await self.api.get_sgvs()
+            values =  self.get_device_status()
             # values2 = await self.api.get_treatments()
-            # values3 = await self.api.get_devices_status()
+            # values3 = await self.api.get_device_status()
         except (ClientError, TimeoutError, OSError) as error:
             _LOGGER.error("Error fetching data. Failed with %s", error)
             self._attr_available = False

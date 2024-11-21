@@ -105,8 +105,8 @@ class Api:
         json = await self.__get("/api/v1/profile.json")
         return ProfileDefinitionSet.new_from_json_array(json)
 
-    async def get_devices_status(self, params={}) -> list[DeviceStatus]:
-        """Fetch devices status.
+    async def get_device_status(self, params={}) -> list[DeviceStatus]:
+        """Fetch device status.
 
         Args:
           params:
@@ -120,8 +120,8 @@ class Api:
         json = await self.__get("/api/v1/devicestatus.json")
         return [DeviceStatus.new_from_json_dict(x) for x in json]
 
-    async def get_latest_devices_status(self, params={}) -> list[DeviceStatus]:
-        """Fetch devices status.
+    async def get_latest_device_status(self, params={}) -> list[DeviceStatus]:
+        """Fetch device status.
 
         Args:
           params:
@@ -132,7 +132,7 @@ class Api:
           ProfileDefinitionSet
 
         """
-        results = await self.get_devices_status(params)
+        results = await self.get_device_status(params)
         grouped = {}
         for entry in results:
             grouped.setdefault(entry.device, []).append(entry)

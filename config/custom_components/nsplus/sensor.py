@@ -55,7 +55,7 @@ class NightscoutSensor(SensorEntity):
         try:
             values =  self.get_device_status()
             # values2 = await self.api.get_treatments()
-            # values3 = await self.api.get_device_status()
+            # values3 = await self.api.get_devicestatus()
         except (ClientError, TimeoutError, OSError) as error:
             _LOGGER.error("Error fetching data. Failed with %s", error)
             self._attr_available = False

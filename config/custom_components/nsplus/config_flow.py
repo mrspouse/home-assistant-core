@@ -4,13 +4,13 @@ import logging
 from typing import Any
 
 from aiohttp import ClientError, ClientResponseError
-from py_nightscout import Api as NightscoutAPI
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_API_KEY, CONF_URL
 from homeassistant.exceptions import HomeAssistantError
 
+from .api import Api as NightscoutAPI
 from .const import DOMAIN
 from .utils import hash_from_url
 
@@ -26,8 +26,8 @@ async def _validate_input(data: dict[str, Any]) -> dict[str, str]:
     try:
         api = NightscoutAPI(url, api_secret=api_key)
         status = await api.get_server_status()
-        if status.settings.get("authDefaultRoles") == "status-only":
-            await api.get_sgvs()
+        # if status.settings.get("authDefaultRoles") == "status-only":
+        #     await api.get_sgvs()
     except ClientResponseError as error:
         raise InputValidationError("invalid_auth") from error
     except (ClientError, TimeoutError, OSError) as error:

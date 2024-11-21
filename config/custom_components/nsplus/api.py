@@ -79,7 +79,7 @@ class Api:
         Args:
           params:
             Mongodb style query params. For example, you can do things like:
-                get_treatments({'count':0, 'find[timestamp][$gte]': '2017-03-07T01:10:26.000Z'})
+                get_devicestatus({'count':0, 'find[timestamp][$gte]': '2017-03-07T01:10:26.000Z'})
 
         Returns:
           A list of Treatments
@@ -89,6 +89,23 @@ class Api:
         json = await self.__get("/api/v1/treatments.json")
 
         return [Treatment.new_from_json_dict(x) for x in json]
+
+    async def get_devicestatus(self, params={}) -> list[DeviceStatus]:
+        """Fetch device status.
+
+        Args:
+          params:
+            Mongodb style query params. For example, you can do things like:
+                get_treatments({'count':0, 'find[timestamp][$gte]': '2017-03-07T01:10:26.000Z'})
+
+        Returns:
+          A list of devices
+
+        """
+
+        json = await self.__get("/api/v1/devicestatus.json?count=1")
+
+        return [DeviceStatus.new_from_json_dict(x) for x in json]
 
     async def get_profiles(self, params={}) -> list[ProfileDefinitionSet]:  # noqa: D417
         """Fetch profiles.
@@ -104,44 +121,6 @@ class Api:
         """
         json = await self.__get("/api/v1/profile.json")
         return ProfileDefinitionSet.new_from_json_array(json)
-
-    async def get_device_status(self, params={}) -> list[DeviceStatus]:
-        """Fetch device status.
-
-        Args:
-          params:
-            Mongodb style query params. For example, you can do things like:
-                get_profiles({'count':0, 'find[startDate][$gte]': '2017-03-07T01:10:26.000Z'})
-
-        Returns:
-          ProfileDefinitionSet
-
-        """
-        json = await self.__get("/api/v1/devicestatus.json")
-        return [DeviceStatus.new_from_json_dict(x) for x in json]
-
-    async def get_latest_device_status(self, params={}) -> list[DeviceStatus]:
-        """Fetch device status.
-
-        Args:
-          params:
-            Mongodb style query params. For example, you can do things like:
-                get_profiles({'count':0, 'find[startDate][$gte]': '2017-03-07T01:10:26.000Z'})
-
-        Returns:
-          ProfileDefinitionSet
-
-        """
-        results = await self.get_device_status(params)
-        grouped = {}
-        for entry in results:
-            grouped.setdefault(entry.device, []).append(entry)
-        output = {}
-        for device_name in grouped:
-            entries = grouped[device_name]
-            entries.sort(key=lambda x: x.created_at, reverse=True)
-            output[device_name] = entries[0]
-        return output
 
     async def __get(self, path):
         async def get(session: ClientSession):

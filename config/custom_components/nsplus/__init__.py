@@ -1,7 +1,6 @@
 """The Nightscout integration."""
 
 from aiohttp import ClientError
-from py_nightscout import Api as NightscoutAPI
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_URL, Platform
@@ -11,6 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import SLOW_UPDATE_WARNING
 
+from .api import Api as NightscoutAPI
 from .const import DOMAIN
 
 PLATFORMS = [Platform.SENSOR]
